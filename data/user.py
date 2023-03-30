@@ -11,6 +11,9 @@ class User(SqlAlchemyBase, UserMixin):
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
     email = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    points = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    hours_missing = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+
 
     def __repr__(self):
         print(f"<User> {self.id} {self.name} {self.email}")
@@ -20,3 +23,18 @@ class User(SqlAlchemyBase, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+    def add_points(self, amount):
+        self.points += amount
+
+    def subtract_points(self, amount):
+        self.points -= amount
+
+    def add_hours(self, amount):
+        self.hours_missing += amount
+
+    def reset_hours_missing(self):
+        self.hours_missing = 0
+
+
+
