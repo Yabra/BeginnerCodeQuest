@@ -14,7 +14,6 @@ class User(SqlAlchemyBase, UserMixin):
     points = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     hours_missing = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
-
     def __repr__(self):
         print(f"<User> {self.id} {self.name} {self.email}")
 
