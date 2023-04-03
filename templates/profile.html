@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <h2>Профиль</h2>
+        <p><b>Пользователь:</b> {{ current_user.name }}</p>
+        <p><b>Рейтинг:</b> {{ current_user.points }}</p>
+        <p><b>email:</b> {{ current_user.email }}</p>
+    {% else %}
+        <h3>Для просмотра профиля, зайдите в аккаунт!</h3>
+    {% endif %}
+{% endblock %}

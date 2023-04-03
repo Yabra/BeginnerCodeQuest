@@ -8,10 +8,10 @@ class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'users'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
-    email = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    points = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    name = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    email = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    hashed_password = sqlalchemy.Column(sqlalchemy.String)
+    points = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     hours_missing = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
     def __repr__(self):
@@ -34,6 +34,3 @@ class User(SqlAlchemyBase, UserMixin):
 
     def reset_hours_missing(self):
         self.hours_missing = 0
-
-
-

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Таблица рейтинга</h2>
+    {% for item in rating_table%}
+        <p><b>{{ item[0] }}.</b> {{ item[1][0] }} (Рейтинг: {{ item[1][1] }})</p>
+    {% endfor %}
+{% endblock %}
