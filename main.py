@@ -21,7 +21,17 @@ def load_user(user_id):
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('base.html', title="Главная")
+    return render_template('index.html', title="Главная")
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html', title="Об сайте")
+
+
+# @app.route('/rating')
+# def rating():
+#     return render_template('rating.html', title="Таблица рейтинга")
 
 
 @app.route('/register', methods=['GET', 'POST'])
