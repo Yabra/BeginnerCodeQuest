@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+
+    <h2>{{ current_problem.name|safe }}</h2>
+    <h4>Описание:</h4>
+    {{ current_problem.description|safe }}
+
+    <br>{{ form.solution.label }}
+    <br>{{ form.solution(rows='20',cols='100') }}
+    {% for error in form.solution.errors %}
+        <p class="alert alert-danger" role="alert">
+            {{ error }}
+        </p>
+    {% endfor %}
+
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+{% endblock %}
