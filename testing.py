@@ -3,6 +3,7 @@ import subprocess
 import traceback
 import json
 import os
+import requests
 
 
 class ReturnType(Enum):
@@ -11,7 +12,7 @@ class ReturnType(Enum):
     EXCEPTION = 2
 
 
-def run_code(code: str, tests_json: str) -> tuple[ReturnType.EXCEPTION, str]:
+def run_code(uuid: str, code: str, tests_json: str) -> None:
     code = "import traceback\n" \
            "__input_file = open(\"input.txt\")\n" \
            "def input(s=\"\"):\n" \
@@ -48,14 +49,11 @@ def run_code(code: str, tests_json: str) -> tuple[ReturnType.EXCEPTION, str]:
 
     os.remove("./solution.py")
     os.remove("./input.txt")
-    return ReturnType.SUCCESS
 
-
-print(
-    run_code(
-        "s = input()\nprint(f\"Hello, {s}!\")\n",
-        json.dumps(
-            [("Ярослав", "Hello, Ярослав!\n"), ("Влад", "Hello, Влад!\n"), ("Pavel", "Hello, Pavel!\n")]
+    requests.post(
+        "http://127.0.0.1:8080/api/solution_testing",
+        json=json.dumps(
+            {"uuid": uuid, "result": "SUCCESS", "msg": "OK"}
         )
     )
-)
+    return ReturnType.SUCCESS

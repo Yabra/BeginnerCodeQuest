@@ -9,7 +9,7 @@ class Problem(SqlAlchemyBase):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     name = sqlalchemy.Column(sqlalchemy.String, unique=True)
     description = sqlalchemy.Column(sqlalchemy.String, unique=True)
-    tests = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    tests = sqlalchemy.Column(sqlalchemy.String)
     difficulty = sqlalchemy.Column(sqlalchemy.Integer)
     points = sqlalchemy.Column(sqlalchemy.Integer)
 

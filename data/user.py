@@ -15,7 +15,7 @@ class User(SqlAlchemyBase, UserMixin):
     hours_missing = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
 
     def __repr__(self):
-        print(f"<User> {self.id} {self.name} {self.email}")
+        return f"<User> {self.id} {self.name} {self.email}"
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

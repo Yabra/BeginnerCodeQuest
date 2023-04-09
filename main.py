@@ -2,44 +2,49 @@ from random import randint
 import json
 from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_restful import Api
 from data import db_session
 from data.user import User
 from data.problem import Problem
 from LoginForm import LoginForm
 from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
+from testing_connect import SolutionResource, new_request, init
 
 
 app = Flask(__name__)
+api = Api(app)
+api.add_resource(SolutionResource, '/api/solution_testing')
+
 app.config['SECRET_KEY'] = 'yabrortus'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-rating_table = None
+db_session.global_init("db/db.db")
+db_sess = db_session.create_session()
+init(db_sess)
 
 
-def update_rating_table():
-    global rating_table
-    db_sess = db_session.create_session()
-    rating_table = []
+def rating_table():
+    table = []
     for user in db_sess.query(User):
-        rating_table.append((user.name, user.points))
+        table.append((user.name, user.points))
 
-    rating_table.sort(key=lambda x: x[1], reverse=True)
+    table.sort(key=lambda x: x[1], reverse=True)
 
-    rating_table = [(i + 1, elem) for i, elem in enumerate(rating_table)]
+    table = [(i + 1, elem) for i, elem in enumerate(table)]
+    return table
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    user = db_sess.query(User).get(user_id)
+    return user
 
 
-@login_manager.user_loader
 def get_problem(problem_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(Problem).filter(Problem.id == problem_id).first()
+    problem = db_sess.query(Problem).get(problem_id)
+    return problem
 
 
 @app.route('/')
@@ -60,12 +65,11 @@ def profile():
 
 @app.route('/rating')
 def rating():
-    return render_template('rating.html', title="Таблица рейтинга", rating_table=rating_table)
+    return render_template('rating.html', title="Таблица рейтинга", rating_table=rating_table())
 
 
 @app.route('/problem/<int:problem_id>', methods=['GET', 'POST'])
-def problem(problem_id):
-    db_sess = db_session.create_session()
+def problem_page(problem_id):
     if problem_id > db_sess.query(Problem).count():
         return page_not_found(None)
 
@@ -77,9 +81,8 @@ def problem(problem_id):
                                    form=form,
                                    current_problem=current_problem,
                                    message="Вы не можете отослать пустое решение!")
-        print(form.solution.data)
-
-    return render_template('problem.html', title=f"Задача №{None}", form=form, current_problem=current_problem)
+        new_request(current_user, current_problem, form.solution.data)
+    return render_template('problem.html', title=f"Задача \"{current_problem.name}\"", form=form, current_problem=current_problem)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -90,7 +93,6 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -103,7 +105,6 @@ def reqister():
         db_sess.add(user)
         db_sess.commit()
         login_user(user, remember=False)
-        update_rating_table()
         return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -112,7 +113,6 @@ def reqister():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
@@ -133,8 +133,8 @@ def logout():
 @app.route('/next_problem/<difficulty>')
 @login_required
 def next_problem(difficulty):
-    db_sess = db_session.create_session()
-    return redirect(f"/problem/{randint(0, db_sess.query(Problem).count())}")
+    problem_id = randint(0, db_sess.query(Problem).count())
+    return redirect(f"/problem/{problem_id}")
 
 
 @app.errorhandler(404)
@@ -143,24 +143,23 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    db_session.global_init("db/db.db")
-    db_sess = db_session.create_session()
-    new_problem = Problem(
-        name="Скажи привет!",
-        description="<p>Создайте программу, принимающую строку и здоровающуся с пользователем.</p>"
-                    "<h4>Пример:<h4>"
-                    "<p><t>Ввод:</p>"
-                    "<p><i>Vlad</i></p>"
-                    "<p>    Вывод:</p>"
-                    "<p><i>Hello, Vlad!</i></p>",
-        tests=json.dumps(
-            [("Ярослав", "Hello, Ярослав!\n"), ("Влад", "Hello, Влад!\n"), ("Pavel", "Hello, Pavel!\n")]
-        ),
-        difficulty=0,
-        points=5
-    )
-    db_sess.add(new_problem)
-    db_sess.commit()
+    # db_sess = db_session.create_session()
+    # new_problem = Problem(
+    #     name="Скажи привет!",
+    #     description="<p>Создайте программу, принимающую строку и здоровающуся с пользователем.</p>"
+    #                 "<h4>Пример:<h4>"
+    #                 "<p><t>Ввод:</p>"
+    #                 "<p><i>Vlad</i></p>"
+    #                 "<p>    Вывод:</p>"
+    #                 "<p><i>Hello, Vlad!</i></p>",
+    #     tests=json.dumps(
+    #         [("Ярослав", "Hello, Ярослав!\n"), ("Влад", "Hello, Влад!\n"), ("Pavel", "Hello, Pavel!\n")]
+    #     ),
+    #     difficulty=0,
+    #     points=5
+    # )
+    # db_sess.add(new_problem)
+    # db_sess.commit()
+    # db_sess.close()
 
-    update_rating_table()
     app.run(port=8080, host='127.0.0.1')
