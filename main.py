@@ -1,3 +1,4 @@
+import datetime
 from random import randint
 import json
 from flask import Flask, render_template, redirect
@@ -25,7 +26,7 @@ db_sess = db_session.create_session()
 init(db_sess)
 
 
-def rating_table():
+def get_rating_table():
     table = []
     for user in db_sess.query(User):
         table.append((user.name, user.points))
@@ -34,6 +35,12 @@ def rating_table():
 
     table = [(i + 1, elem) for i, elem in enumerate(table)]
     return table
+
+
+def get_notifications():
+    notifications = json.loads(db_sess.query(User).first().notifications)
+    notifications.sort(key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"))
+    return notifications
 
 
 @login_manager.user_loader
@@ -65,7 +72,12 @@ def profile():
 
 @app.route('/rating')
 def rating():
-    return render_template('rating.html', title="Таблица рейтинга", rating_table=rating_table())
+    return render_template('rating.html', title="Таблица рейтинга", rating_table=get_rating_table())
+
+
+@app.route('/notifications')
+def notifications():
+    return render_template('notifications.html', title="Уведомления", notifications=get_notifications())
 
 
 @app.route('/problem/<int:problem_id>', methods=['GET', 'POST'])
@@ -130,6 +142,15 @@ def logout():
     return redirect("/")
 
 
+@app.route('/clear_notifications')
+@login_required
+def clear_notifications():
+    current_user.clear_notifications()
+    db_sess.add(current_user)
+    db_sess.commit()
+    return redirect("/notifications")
+
+
 @app.route('/next_problem/<difficulty>')
 @login_required
 def next_problem(difficulty):
@@ -143,7 +164,6 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    # db_sess = db_session.create_session()
     # new_problem = Problem(
     #     name="Скажи привет!",
     #     description="<p>Создайте программу, принимающую строку и здоровающуся с пользователем.</p>"
@@ -160,6 +180,5 @@ if __name__ == '__main__':
     # )
     # db_sess.add(new_problem)
     # db_sess.commit()
-    # db_sess.close()
 
     app.run(port=8080, host='127.0.0.1')

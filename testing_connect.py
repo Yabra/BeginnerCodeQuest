@@ -37,6 +37,9 @@ class SolutionResource(Resource):
             if json_data["result"] == "SUCCESS":
                 user = db_sess.query(User).get(test_requests[json_data["uuid"]][0])
                 user.points += test_requests[json_data["uuid"]][1].points
+
+                user.add_notification("Решено!", test_requests[json_data["uuid"]][1].id)
+
                 db_sess.add(user)
                 db_sess.commit()
         return json.dumps({'success': 'OK'})

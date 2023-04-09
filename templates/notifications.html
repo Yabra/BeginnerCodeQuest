@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Уведомления</h2>
+    {% for item in notifications%}
+        <p>
+            <b>{{ item[0] }}</b> - {{ item[1] }}
+            <a class="navbar-brand" href={{ item[2] }}> Ссылка </a>
+        </p>
+    {% endfor %}
+    <a class="btn btn-primary" href="/clear_notifications">Очистить</a>
+{% endblock %}
