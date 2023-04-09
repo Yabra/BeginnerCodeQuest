@@ -2,6 +2,7 @@ import sqlalchemy
 from .db_session import SqlAlchemyBase
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 
 class User(SqlAlchemyBase, UserMixin):
@@ -12,7 +13,8 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     points = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    hours_missing = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    problems_status = sqlalchemy.Column(sqlalchemy.String, "{}")
+    last_active = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return f"<User> {self.id} {self.name} {self.email}"
@@ -29,8 +31,5 @@ class User(SqlAlchemyBase, UserMixin):
     def subtract_points(self, amount):
         self.points -= amount
 
-    def add_hours(self, amount):
-        self.hours_missing += amount
-
-    def reset_hours_missing(self):
-        self.hours_missing = 0
+    def new_active(self):
+        self.last_active = datetime.datetime.now
