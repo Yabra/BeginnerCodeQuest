@@ -47,5 +47,8 @@ class User(SqlAlchemyBase, UserMixin):
     def clear_notifications(self):
         self.notifications = "[]"
 
+    def notifications_count(self):
+        return len(json.loads(self.notifications))
+
     def new_active(self):
         self.last_active = datetime.datetime.now

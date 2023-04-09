@@ -16,6 +16,15 @@
             <a class="navbar-brand" href="/">Beginner Code Quest</a>
             <a class="btn btn-primary " href="/about">Об сайте</a>
             <a class="btn btn-primary " href="/rating">Таблица рейтинга</a>
+        {% if current_user.is_authenticated and current_user.notifications_count() != 0 %}
+            </p>
+                <a class="btn btn-primary " href="/notifications">
+                    {{ current_user.notifications_count() }}
+                    <img src="{{ url_for('static', filename='image/notifications.png') }}" width="30"/>
+                </a>
+            <p>
+        {% endif %}
+
         </p>
         {% if current_user.is_authenticated %}
         <p>

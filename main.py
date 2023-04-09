@@ -1,7 +1,7 @@
 import datetime
 from random import randint
 import json
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 from data import db_session
@@ -38,7 +38,7 @@ def get_rating_table():
 
 
 def get_notifications():
-    notifications = json.loads(db_sess.query(User).first().notifications)
+    notifications = json.loads(current_user.notifications)
     notifications.sort(key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"))
     return notifications
 
