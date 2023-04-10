@@ -51,4 +51,4 @@ class User(SqlAlchemyBase, UserMixin):
         return len(json.loads(self.notifications))
 
     def new_active(self):
-        self.last_active = datetime.datetime.now
+        self.last_active = datetime.datetime.now()

@@ -43,6 +43,13 @@ def get_notifications():
     return notifications
 
 
+def check_user_activity():
+    if current_user.is_authenticated:
+        current_user.new_active()
+        db_sess.add(current_user)
+        db_sess.commit()
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = db_sess.query(User).get(user_id)
@@ -62,26 +69,32 @@ def index():
 
 @app.route('/about')
 def about():
+    check_user_activity()
     return render_template('about.html', title="Об сайте")
 
 
 @app.route('/profile')
 def profile():
+    check_user_activity()
     return render_template('profile.html', title="Профиль")
 
 
 @app.route('/rating')
 def rating():
+    check_user_activity()
     return render_template('rating.html', title="Таблица рейтинга", rating_table=get_rating_table())
 
 
 @app.route('/notifications')
 def notifications():
+    check_user_activity()
     return render_template('notifications.html', title="Уведомления", notifications=get_notifications())
 
 
 @app.route('/problem/<int:problem_id>', methods=['GET', 'POST'])
 def problem_page(problem_id):
+    check_user_activity()
+
     if problem_id > db_sess.query(Problem).count():
         return page_not_found(None)
 
@@ -117,6 +130,7 @@ def reqister():
         db_sess.add(user)
         db_sess.commit()
         login_user(user, remember=False)
+        check_user_activity()
         return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -128,6 +142,7 @@ def login():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
+            check_user_activity()
             return redirect("/")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -138,6 +153,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    check_user_activity()
     logout_user()
     return redirect("/")
 
@@ -148,6 +164,7 @@ def clear_notifications():
     current_user.clear_notifications()
     db_sess.add(current_user)
     db_sess.commit()
+    check_user_activity()
     return redirect("/notifications")
 
 
