@@ -39,7 +39,9 @@ def get_rating_table():
 
 def get_notifications():
     notifications = json.loads(current_user.notifications)
-    notifications.sort(key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"))
+    notifications = sorted(notifications,
+                           key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"),
+                           reverse=True)
     return notifications
 
 
@@ -107,6 +109,9 @@ def problem_page(problem_id):
                                    current_problem=current_problem,
                                    message="Вы не можете отослать пустое решение!")
         new_request(current_user, current_problem, form.solution.data)
+    else:
+        if current_user.is_authenticated and current_user.get_problem_status(problem_id)[0]:
+            form.solution.data = current_user.get_problem_status(problem_id)[2]
     return render_template('problem.html', title=f"Задача \"{current_problem.name}\"", form=form, current_problem=current_problem)
 
 

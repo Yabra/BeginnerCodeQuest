@@ -9,6 +9,17 @@
         {{ current_problem.description|safe }}
 
     {% if current_user.is_authenticated %}
+        {% if current_user.get_problem_status(current_problem.id)[0] in ("WRONG", "EXCEPTION")%}
+            <div class="bg-danger p-2 bg-gradient bg-opacity-75">
+                <p>Задача не решена:</p>
+                <p>{{ current_user.get_problem_status(current_problem.id)[1] }}</p>
+            </div>
+        {% elif current_user.get_problem_status(current_problem.id)[0] == "SUCCESS"%}
+            <div class="bg-success p-2 bg-gradient bg-opacity-75">
+                <p>Задача решена</p>
+            </div>
+        {% endif %}
+
         <br>{{ form.solution.label }}
         <br>{{ form.solution(rows='20',cols='100') }}
         {% for error in form.solution.errors %}
@@ -17,8 +28,10 @@
             </p>
         {% endfor %}
 
-        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        {{message}}
+        {% if current_user.get_problem_status(current_problem.id)[0] != "SUCCESS"%}
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        {% endif %}
+
     {% else %}
         <h2>Для решения задачи, зайдите в аккаунт!</h2>
     {% endif %}

@@ -6,6 +6,7 @@ import json
 import uuid
 import requests
 from sqlalchemy.orm import Session
+import ProblemStatusTypes
 
 
 test_requests = {}
@@ -19,8 +20,11 @@ def init(db):
 
 
 def new_request(user: User, problem: Problem, code: str):
+    if user.get_problem_status(problem.id)[0] == ProblemStatusTypes.SUCCESS:
+        return
+
     new_uuid = uuid.uuid4()
-    test_requests[str(new_uuid)] = (user.id, problem)
+    test_requests[str(new_uuid)] = (user.id, problem, code)
     requests.post(
         "http://127.0.0.1:5000/get_solution_data",
         json=json.dumps(
@@ -33,13 +37,23 @@ class SolutionResource(Resource):
     def post(self):
         global db_sess
         json_data = json.loads(request.get_json())
+
         if json_data["uuid"] in test_requests.keys():
-            if json_data["result"] == "SUCCESS":
-                user = db_sess.query(User).get(test_requests[json_data["uuid"]][0])
-                user.points += test_requests[json_data["uuid"]][1].points
+            request_data = test_requests[json_data["uuid"]]
+            user: User = db_sess.query(User).get(test_requests[json_data["uuid"]][0])
+            problem: Problem = request_data[1]
 
-                user.add_notification("Решено!", test_requests[json_data["uuid"]][1].id)
+            user.set_problem_status(problem.id, json_data["status"], json_data["msg"], request_data[2])
 
-                db_sess.add(user)
-                db_sess.commit()
-        return json.dumps({'success': 'OK'})
+            if json_data["status"] == ProblemStatusTypes.SUCCESS:
+                user.points += problem.points
+                user.add_notification("Решено!", problem.id)
+
+            elif json_data["status"] == ProblemStatusTypes.WRONG:
+                user.add_notification("Неверный ответ!", problem.id)
+
+            elif json_data["status"] == ProblemStatusTypes.EXCEPTION:
+                user.add_notification("Ошибка!", problem.id)
+
+            db_sess.add(user)
+            db_sess.commit()

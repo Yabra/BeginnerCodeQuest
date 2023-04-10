@@ -1,15 +1,9 @@
-from enum import Enum
 import subprocess
 import traceback
 import json
 import os
 import requests
-
-
-class ReturnType(Enum):
-    SUCCESS = 0
-    WRONG = 1
-    EXCEPTION = 2
+import ProblemStatusTypes
 
 
 def run_code(uuid: str, code: str, tests_json: str) -> None:
@@ -40,20 +34,35 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
             continue
 
         elif result.startswith("Exception:"):
-            return ReturnType.EXCEPTION, result
+            requests.post(
+                "http://127.0.0.1:8080/api/solution_testing",
+                json=json.dumps(
+                    {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": result}
+                )
+            )
 
-        else:
             os.remove("./solution.py")
             os.remove("./input.txt")
-            return ReturnType.WRONG
+            return
 
-    os.remove("./solution.py")
-    os.remove("./input.txt")
+        else:
+            requests.post(
+                "http://127.0.0.1:8080/api/solution_testing",
+                json=json.dumps(
+                    {"uuid": uuid, "status": ProblemStatusTypes.WRONG, "msg": "Wrong answer!"}
+                )
+            )
+
+            os.remove("./solution.py")
+            os.remove("./input.txt")
+            return
 
     requests.post(
         "http://127.0.0.1:8080/api/solution_testing",
         json=json.dumps(
-            {"uuid": uuid, "result": "SUCCESS", "msg": "OK"}
+            {"uuid": uuid, "status": ProblemStatusTypes.SUCCESS, "msg": "OK"}
         )
     )
-    return ReturnType.SUCCESS
+
+    os.remove("./solution.py")
+    os.remove("./input.txt")

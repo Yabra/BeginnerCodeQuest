@@ -14,7 +14,7 @@ class User(SqlAlchemyBase, UserMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     points = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    problems_status = sqlalchemy.Column(sqlalchemy.String, default="[]")
+    problems_status = sqlalchemy.Column(sqlalchemy.String, default="{}")
     notifications = sqlalchemy.Column(sqlalchemy.String, default="[]")
     last_active = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
 
@@ -52,3 +52,14 @@ class User(SqlAlchemyBase, UserMixin):
 
     def new_active(self):
         self.last_active = datetime.datetime.now()
+
+    def get_problem_status(self, problem_id):
+        if str(problem_id) in json.loads(self.problems_status).keys():
+            return json.loads(self.problems_status)[str(problem_id)]
+        else:
+            return None,
+
+    def set_problem_status(self, problem_id, status, message, code):
+        self.problems_status = json.loads(self.problems_status)
+        self.problems_status[str(problem_id)] = (status, message, code)
+        self.problems_status = json.dumps(self.problems_status)
