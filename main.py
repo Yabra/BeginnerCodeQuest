@@ -1,9 +1,12 @@
 import datetime
+import random
 from random import randint
 import json
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
+
+import ProblemStatusTypes
 from data import db_session
 from data.user import User
 from data.problem import Problem
@@ -43,6 +46,11 @@ def get_notifications():
                            key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"),
                            reverse=True)
     return notifications
+
+
+def get_problem_statuses():
+    problem_statuses = json.loads(current_user.problems_status)
+    return problem_statuses
 
 
 def check_user_activity():
@@ -91,6 +99,12 @@ def rating():
 def notifications():
     check_user_activity()
     return render_template('notifications.html', title="Уведомления", notifications=get_notifications())
+
+
+@app.route('/problems_list')
+def problems_list():
+    check_user_activity()
+    return render_template('problems_list.html', title="Список задач", problems=db_sess.query(Problem))
 
 
 @app.route('/problem/<int:problem_id>', methods=['GET', 'POST'])
@@ -173,11 +187,18 @@ def clear_notifications():
     return redirect("/notifications")
 
 
-@app.route('/next_problem/<difficulty>')
+@app.route('/next_problem')
 @login_required
-def next_problem(difficulty):
-    problem_id = randint(0, db_sess.query(Problem).count())
-    return redirect(f"/problem/{problem_id}")
+def next_problem():
+    problems = [str(i) for i in range(1, db_sess.query(Problem).count() + 1)]
+    for problem_id, status in get_problem_statuses().items():
+        if status[0] == ProblemStatusTypes.SUCCESS:
+            problems.remove(problem_id)
+
+    if not problems:
+        return redirect("/problems_list")
+
+    return redirect(f"/problem/{random.choice(problems)}")
 
 
 @app.errorhandler(404)

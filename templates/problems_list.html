@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Список задач</h2>
+    {% for problem in problems%}
+        <p>
+            <a class="navbar-brand" href=/problem/{{ problem.id }}>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.get_problem_status(problem.id)[0] in ("WRONG", "EXCEPTION") %}
+                        <img src="{{ url_for('static', filename='image/wrong.png') }}" width="30"/>
+                    {% elif current_user.get_problem_status(problem.id)[0] == "SUCCESS"%}
+                        <img src="{{ url_for('static', filename='image/success.png') }}" width="30"/>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='image/no_status.png') }}" width="30"/>
+                    {% endif %}
+                {% endif %}
+                <b>Задача №{{ problem.id }}</b> - {{ problem.name }}
+            </a>
+        </p>
+    {% endfor %}
+{% endblock %}
