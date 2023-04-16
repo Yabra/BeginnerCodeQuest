@@ -3,11 +3,15 @@
 {% block content %}
     <h2>Решайте задачи на Beginner Code Quest!</h2>
     {% if current_user.is_authenticated %}
-        </p>
+        <p>
             <a class="btn btn-primary " href="/next_problem">Случайная задача</a>
-        <p>
         </p>
-            <a class="btn btn-primary " href="/problems_list">Список задач</a>
         <p>
+            <a class="btn btn-primary " href="/problems_list">Список задач</a>
+        </p>
+    {% else %}
+        <h3>Войдите чтобы увидеть задачи</h3>
+
+
     {% endif %}
 {% endblock %}
