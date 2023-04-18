@@ -131,6 +131,8 @@ def problem_page(problem_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
+    if current_user.is_authenticated:
+        return redirect("/")
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -156,6 +158,8 @@ def reqister():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect("/")
     form = LoginForm()
     if form.validate_on_submit():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
@@ -225,3 +229,5 @@ if __name__ == '__main__':
     # db_sess.commit()
 
     app.run(port=8080, host='127.0.0.1')
+
+
