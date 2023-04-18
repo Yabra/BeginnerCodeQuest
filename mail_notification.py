@@ -58,12 +58,16 @@ def email_notification(db_name):
 
 
 def start_notification():
-    schedule.every().day.at("00:00").do(email_notification, db_name="db/db.db", daemon=True)
+    schedule.every(10).seconds.do(email_notification, db_name="db/db.db")
     while True:
         schedule.run_pending()
 
+def notification_in_thread():
+    th = threading.Thread(target=start_notification)
+    th.start()
 
 
+notification_in_thread()
 
 
 

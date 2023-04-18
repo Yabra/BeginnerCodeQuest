@@ -16,5 +16,18 @@ footer
 }
 main
 {
-height: 100%;
+    height: 100%;
 }
+
+#description
+{
+    font-size: 25pt;
+}
+
+#motivation
+{
+    font-size: 25pt;
+
+}
+
+
