@@ -9,7 +9,7 @@
         {{ current_problem.description|safe }}
 
     {% if current_user.is_authenticated %}
-        {% if current_user.get_problem_status(current_problem.id)[0] in ("WRONG", "EXCEPTION")%}
+        {% if current_user.get_problem_status(current_problem.id)[0] in ("WRONG", "EXCEPTION", "TIME_LIMIT", "SYNTAX_ERROR")%}
             <div class="bg-danger p-2 bg-gradient bg-opacity-75">
                 <p>Задача не решена:</p>
                 <p>{{ current_user.get_problem_status(current_problem.id)[1] }}</p>

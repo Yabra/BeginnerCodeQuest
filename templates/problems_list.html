@@ -6,7 +6,7 @@
         <p>
             <a class="navbar-brand" href=/problem/{{ problem.id }}>
                 {% if current_user.is_authenticated %}
-                    {% if current_user.get_problem_status(problem.id)[0] in ("WRONG", "EXCEPTION") %}
+                    {% if current_user.get_problem_status(problem.id)[0] in ("WRONG", "EXCEPTION", "TIME_LIMIT", "SYNTAX_ERROR") %}
                         <img src="{{ url_for('static', filename='image/wrong.png') }}" width="30"/>
                     {% elif current_user.get_problem_status(problem.id)[0] == "SUCCESS"%}
                         <img src="{{ url_for('static', filename='image/success.png') }}" width="30"/>

@@ -55,5 +55,11 @@ class SolutionResource(Resource):
             elif json_data["status"] == ProblemStatusTypes.EXCEPTION:
                 user.add_notification("Ошибка!", problem.id)
 
+            elif json_data["status"] == ProblemStatusTypes.TIME_LIMIT:
+                user.add_notification("Слишком медленное решение!", problem.id)
+
+            elif json_data["status"] == ProblemStatusTypes.SYNTAX_ERROR:
+                user.add_notification("Синтаксическая ошибка!", problem.id)
+
             db_sess.add(user)
             db_sess.commit()

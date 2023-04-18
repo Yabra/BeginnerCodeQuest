@@ -1,4 +1,7 @@
+import asyncio
+
 from flask import Flask, request
+import os
 import requests
 import json
 from multiprocessing import Process, Pool
@@ -13,11 +16,13 @@ pool = Pool()
 def get_solution_data():
     json_req = request.get_json()
     json_parsed = json.loads(json_req)
-    pool.apply_async(run_code, (json_parsed["uuid"], json_parsed["code"], json_parsed["tests"]))
+    run_code(json_parsed["uuid"], json_parsed["code"], json_parsed["tests"])
 
     return ""
 
 
 if __name__ == '__main__':
+    if not os.path.exists("./testing"):
+        os.mkdir("./testing")
     app.run(port=5000, host='127.0.0.1')
 
