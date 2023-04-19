@@ -35,7 +35,7 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
 
             else:
                 requests.post(
-                    f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+                    f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
                     json=json.dumps(
                         {"uuid": uuid, "status": ProblemStatusTypes.WRONG, "msg": "Wrong answer!"}
                     )
@@ -46,7 +46,7 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
                 return
 
         requests.post(
-            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
             json=json.dumps(
                 {"uuid": uuid, "status": ProblemStatusTypes.SUCCESS, "msg": "OK"}
             )
@@ -54,7 +54,7 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
 
     except subprocess.TimeoutExpired:
         requests.post(
-            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
             json=json.dumps(
                 {"uuid": uuid, "status": ProblemStatusTypes.TIME_LIMIT, "msg": "Time limit error!"}
             )
@@ -64,14 +64,14 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
         output = "<p>" + e.output.decode().replace("\n", "<p>")
         if "SyntaxError" in output:
             requests.post(
-                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
                 json=json.dumps(
                     {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:\n" + output}
                 )
             )
         else:
             requests.post(
-                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
                 json=json.dumps(
                     {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": "Runtime error:\n" + output}
                 )

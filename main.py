@@ -12,12 +12,12 @@ from data.problem import Problem
 from LoginForm import LoginForm
 from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
-from testing_connect import SolutionResource, new_request, init
+from testing_connect import ResultResource, new_request, init
 from mail_notification import notification_in_thread
 
 app = Flask(__name__)
 api = Api(app)
-api.add_resource(SolutionResource, "/api/solution_testing")
+api.add_resource(ResultResource, "/api/results")
 
 app.config['SECRET_KEY'] = "yabrortus"
 

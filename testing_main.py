@@ -1,12 +1,25 @@
 import json
 import os
-from multiprocessing import Pool
 
-from flask import Flask, request
+import flask
+from flask import Flask, jsonify, request
+from flask_restful import Api
+from flask_restful import Resource, reqparse
 
 from testing import run_code
 
+
+class SolutionResource(Resource):
+    def post(self):
+        json_data = json.loads(request.get_json())
+        run_code(json_data["uuid"], json_data["code"], json_data["tests"], app)
+        return jsonify({'success': 'OK'})
+
+
 app = Flask(__name__)
+api = Api(app)
+api.add_resource(SolutionResource, "/api/solutions")
+
 app.config['SECRET_KEY'] = 'yabrortus'
 
 cnf_file = open("./config/testing.json")
@@ -16,17 +29,6 @@ cnf_file.close()
 app.config['HOST'] = cnf_data["host"]
 app.config['PORT'] = cnf_data["port"]
 app.config['MAIN_SERVER_ADDRESS'] = cnf_data["main_server_address"]
-
-pool = Pool()
-
-
-@app.route('/get_solution_data', methods=['POST'])
-def get_solution_data():
-    json_req = request.get_json()
-    json_parsed = json.loads(json_req)
-    run_code(json_parsed["uuid"], json_parsed["code"], json_parsed["tests"], app)
-
-    return ""
 
 
 if __name__ == '__main__':

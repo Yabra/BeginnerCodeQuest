@@ -30,14 +30,14 @@ def new_request(user: User, problem: Problem, code: str):
     new_uuid = uuid.uuid4()
     test_requests[str(new_uuid)] = (user.id, problem, code)
     requests.post(
-        f"http://{app_obj.config['TESTING_SERVER_ADDRESS']}/get_solution_data",
+        f"http://{app_obj.config['TESTING_SERVER_ADDRESS']}/api/solutions",
         json=json.dumps(
             {"uuid": str(new_uuid), "code": code, "tests": problem.tests}
         )
     )
 
 
-class SolutionResource(Resource):
+class ResultResource(Resource):
     def post(self):
         global db_sess
         json_data = json.loads(request.get_json())
