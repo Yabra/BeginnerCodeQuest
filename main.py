@@ -14,6 +14,7 @@ from LoginForm import LoginForm
 from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
 from testing_connect import SolutionResource, new_request, init
+from mail_notification import notification_in_thread
 
 
 app = Flask(__name__)
@@ -227,7 +228,7 @@ if __name__ == '__main__':
     # )
     # db_sess.add(new_problem)
     # db_sess.commit()
-
+    notification_in_thread()
     app.run(port=8080, host='127.0.0.1')
 
 
