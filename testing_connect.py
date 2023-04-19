@@ -13,11 +13,14 @@ from data.user import User
 test_requests = {}
 
 db_sess: Session = None
+app_obj = None
 
 
-def init(db):
+def init(db, app):
     global db_sess
+    global app_obj
     db_sess = db
+    app_obj = app
 
 
 def new_request(user: User, problem: Problem, code: str):
@@ -27,7 +30,7 @@ def new_request(user: User, problem: Problem, code: str):
     new_uuid = uuid.uuid4()
     test_requests[str(new_uuid)] = (user.id, problem, code)
     requests.post(
-        "http://127.0.0.1:5000/get_solution_data",
+        f"http://{app_obj.config['TESTING_SERVER_ADDRESS']}/get_solution_data",
         json=json.dumps(
             {"uuid": str(new_uuid), "code": code, "tests": problem.tests}
         )

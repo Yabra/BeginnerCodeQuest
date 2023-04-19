@@ -7,7 +7,7 @@ import requests
 import ProblemStatusTypes
 
 
-def run_code(uuid: str, code: str, tests_json: str) -> None:
+def run_code(uuid: str, code: str, tests_json: str, app) -> None:
     try:
         code = "import traceback\n" \
                "import argparse\n" \
@@ -47,7 +47,7 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
 
             elif result.startswith("Exception:"):
                 requests.post(
-                    "http://127.0.0.1:8080/api/solution_testing",
+                    f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
                     json=json.dumps(
                         {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": result}
                     )
@@ -60,7 +60,7 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
 
             else:
                 requests.post(
-                    "http://127.0.0.1:8080/api/solution_testing",
+                    f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
                     json=json.dumps(
                         {"uuid": uuid, "status": ProblemStatusTypes.WRONG, "msg": "Wrong answer!"}
                     )
@@ -72,7 +72,7 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
                 return
 
         requests.post(
-            "http://127.0.0.1:8080/api/solution_testing",
+            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
             json=json.dumps(
                 {"uuid": uuid, "status": ProblemStatusTypes.SUCCESS, "msg": "OK"}
             )
@@ -80,7 +80,7 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
 
     except subprocess.TimeoutExpired:
         requests.post(
-            "http://127.0.0.1:8080/api/solution_testing",
+            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
             json=json.dumps(
                 {"uuid": uuid, "status": ProblemStatusTypes.TIME_LIMIT, "msg": "Time limit error!"}
             )
@@ -88,7 +88,7 @@ def run_code(uuid: str, code: str, tests_json: str) -> None:
 
     except subprocess.CalledProcessError as e:
         requests.post(
-            "http://127.0.0.1:8080/api/solution_testing",
+            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
             json=json.dumps(
                 {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:\n" + e.output.decode()}
             )

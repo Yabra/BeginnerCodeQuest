@@ -20,13 +20,20 @@ api = Api(app)
 api.add_resource(SolutionResource, "/api/solution_testing")
 
 app.config['SECRET_KEY'] = "yabrortus"
-app.config['UPLOAD_FOLDER'] = "upload"
+
+cnf_file = open("./config/main.json")
+cnf_data = json.loads(cnf_file.read())
+cnf_file.close()
+
+app.config['PORT'] = cnf_data["port"]
+app.config['TESTING_SERVER_ADDRESS'] = cnf_data["testing_server_address"]
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 db_session.global_init("db/db.db")
 db_sess = db_session.create_session()
-init(db_sess)
+init(db_sess, app)
 
 
 def get_rating_table():
@@ -240,4 +247,4 @@ if __name__ == '__main__':
     # db_sess.add(new_problem)
     # db_sess.commit()
     notification_in_thread(db_sess)
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=app.config["PORT"], host='127.0.0.1')
