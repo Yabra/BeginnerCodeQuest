@@ -1,15 +1,16 @@
-import smtplib
-import pymorphy2
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from data.db_session import global_init, create_session
-from data.user import User
 import datetime
-import schedule
+import smtplib
 import threading
 import time
-from threading import Thread, Event
-from time import sleep
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import pymorphy2
+import schedule
+
+from data.db_session import global_init, create_session
+from data.user import User
+
 
 def send_email(reciever, days, name):
     me = "beginnercodequest@rambler.ru"
@@ -63,18 +64,7 @@ def start_notification():
         schedule.run_pending()
         time.sleep(30)
 
+
 def notification_in_thread():
     th = threading.Thread(target=start_notification)
     th.start()
-
-
-
-
-
-
-
-
-
-
-
-

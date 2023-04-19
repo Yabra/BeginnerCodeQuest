@@ -1,6 +1,5 @@
 import datetime
 import random
-from random import randint
 import json
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -15,7 +14,6 @@ from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
 from testing_connect import SolutionResource, new_request, init
 from mail_notification import notification_in_thread
-
 
 app = Flask(__name__)
 api = Api(app)
@@ -127,7 +125,8 @@ def problem_page(problem_id):
     else:
         if current_user.is_authenticated and current_user.get_problem_status(problem_id)[0]:
             form.solution.data = current_user.get_problem_status(problem_id)[2]
-    return render_template('problem.html', title=f"Задача \"{current_problem.name}\"", form=form, current_problem=current_problem)
+    return render_template('problem.html', title=f"Задача \"{current_problem.name}\"", form=form,
+                           current_problem=current_problem)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -230,5 +229,3 @@ if __name__ == '__main__':
     # db_sess.commit()
     notification_in_thread()
     app.run(port=8080, host='127.0.0.1')
-
-

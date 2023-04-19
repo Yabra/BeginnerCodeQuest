@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Таблица рейтинга</h2>
-    <h3>На этой странице вы можете найти себя в общей таблице рейтинга <br></h3>
-    <p id="motivation">Решайте больше задач и продвигайтесь в системе рейтинга к самым высокм местам. У вас обязательн получится</p>
-    <img src="static\image\ranking.jpg" align="left" height="300" width="400">
-    {% for item in rating_table%}
-        <p><b>{{ item[0] }}.</b> {{ item[1][0] }} (Рейтинг: {{ item[1][1] }})</p>
-    {% endfor %}
+<h2>Таблица рейтинга</h2>
+<h3>На этой странице вы можете найти себя в общей таблице рейтинга <br></h3>
+<p id="motivation">Решайте больше задач и продвигайтесь в системе рейтинга к самым высокм местам. У вас обязательн
+    получится</p>
+<img align="left" height="300" src="static\image\ranking.jpg" width="400">
+{% for item in rating_table%}
+<p><b>{{ item[0] }}.</b> {{ item[1][0] }} (Рейтинг: {{ item[1][1] }})</p>
+{% endfor %}
 {% endblock %}

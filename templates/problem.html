@@ -6,34 +6,35 @@
 
     <h2>{{ current_problem.name|safe }}</h2>
     <h4>Описание:</h4>
-        {{ current_problem.description|safe }}
+    {{ current_problem.description|safe }}
 
     {% if current_user.is_authenticated %}
-        {% if current_user.get_problem_status(current_problem.id)[0] in ("WRONG", "EXCEPTION", "TIME_LIMIT", "SYNTAX_ERROR")%}
-            <div class="bg-danger p-2 bg-gradient bg-opacity-75">
-                <p>Задача не решена:</p>
-                <p>{{ current_user.get_problem_status(current_problem.id)[1] }}</p>
-            </div>
-        {% elif current_user.get_problem_status(current_problem.id)[0] == "SUCCESS"%}
-            <div class="bg-success p-2 bg-gradient bg-opacity-75">
-                <p>Задача решена</p>
-            </div>
-        {% endif %}
+    {% if current_user.get_problem_status(current_problem.id)[0] in ("WRONG", "EXCEPTION", "TIME_LIMIT",
+    "SYNTAX_ERROR")%}
+    <div class="bg-danger p-2 bg-gradient bg-opacity-75">
+        <p>Задача не решена:</p>
+        <p>{{ current_user.get_problem_status(current_problem.id)[1] }}</p>
+    </div>
+    {% elif current_user.get_problem_status(current_problem.id)[0] == "SUCCESS"%}
+    <div class="bg-success p-2 bg-gradient bg-opacity-75">
+        <p>Задача решена</p>
+    </div>
+    {% endif %}
 
-        <br>{{ form.solution.label }}
-        <br>{{ form.solution(rows='20',cols='100') }}
-        {% for error in form.solution.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
+    <br>{{ form.solution.label }}
+    <br>{{ form.solution(rows='20',cols='100') }}
+    {% for error in form.solution.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
 
-        {% if current_user.get_problem_status(current_problem.id)[0] != "SUCCESS"%}
-            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        {% endif %}
+    {% if current_user.get_problem_status(current_problem.id)[0] != "SUCCESS"%}
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {% endif %}
 
     {% else %}
-        <h2>Для решения задачи, зайдите в аккаунт!</h2>
+    <h2>Для решения задачи, зайдите в аккаунт!</h2>
     {% endif %}
 </form>
 {% endblock %}

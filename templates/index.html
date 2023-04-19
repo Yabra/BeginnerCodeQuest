@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <link rel="stylesheet" href="style.css">
-    <h2>Решайте задачи на Beginner Code Quest!</h2>
-    {% if current_user.is_authenticated %}
-        <p>
-            <a class="btn btn-primary " href="/next_problem">Случайная задача</a>
-        </p>
-        <p>
-            <a class="btn btn-primary " href="/problems_list">Список задач</a>
-        </p>
-    {% else %}
-        <h3>Войдите чтобы увидеть задачи</h3>
-    {% endif %}
-    <img src="static\image\pic.jpg" align="left" height="300" width="300">
-    <div id="description"> Beginner Code Quest - это сайт для начинающих программистов, которые хотят научиться лучше решать задачи</div>
+<link href="style.css" rel="stylesheet">
+<h2>Решайте задачи на Beginner Code Quest!</h2>
+{% if current_user.is_authenticated %}
+<p>
+    <a class="btn btn-primary " href="/next_problem">Случайная задача</a>
+</p>
+<p>
+    <a class="btn btn-primary " href="/problems_list">Список задач</a>
+</p>
+{% else %}
+<h3>Войдите чтобы увидеть задачи</h3>
+{% endif %}
+<img align="left" height="300" src="static\image\pic.jpg" width="300">
+<div id="description"> Beginner Code Quest - это сайт для начинающих программистов, которые хотят научиться лучше решать
+    задачи
+</div>
 {% endblock %}
