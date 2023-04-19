@@ -25,6 +25,7 @@ cnf_file = open("./config/main.json")
 cnf_data = json.loads(cnf_file.read())
 cnf_file.close()
 
+app.config['HOST'] = cnf_data["host"]
 app.config['PORT'] = cnf_data["port"]
 app.config['TESTING_SERVER_ADDRESS'] = cnf_data["testing_server_address"]
 
@@ -247,4 +248,4 @@ if __name__ == '__main__':
     # db_sess.add(new_problem)
     # db_sess.commit()
     notification_in_thread(db_sess)
-    app.run(port=app.config["PORT"], host='127.0.0.1')
+    app.run(port=app.config["PORT"], host=app.config["HOST"])
