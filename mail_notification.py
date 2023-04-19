@@ -47,24 +47,21 @@ def send_email(receiver, days, name):
     s.sendmail(me, you, msg.as_string())
 
 
-def email_notification(db_name):
+def email_notification(db_sess):
     now = datetime.datetime.now()
-    db_name = db_name
-    global_init(db_name)
-    db_sess = create_session()
     for user in db_sess.query(User):
         time_diff = (now - user.last_active).days
         if time_diff > 0:
             send_email(user.email, time_diff, user.name)
 
 
-def start_notification():
-    schedule.every().day.at("00:00").do(email_notification, db_name="db/db.db")
+def start_notification(db_sess):
+    schedule.every().day.at("00:00").do(email_notification, db_sess=db_sess)
     while True:
         schedule.run_pending()
         time.sleep(30)
 
 
-def notification_in_thread():
-    th = threading.Thread(target=start_notification)
+def notification_in_thread(db_sess):
+    th = threading.Thread(target=start_notification, args=(db_sess,))
     th.start()

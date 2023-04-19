@@ -40,11 +40,11 @@ def get_rating_table():
 
 
 def get_notifications():
-    notifications = json.loads(current_user.notifications)
-    notifications = sorted(notifications,
-                           key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"),
-                           reverse=True)
-    return notifications
+    notifications_list = json.loads(current_user.notifications)
+    notifications_list = sorted(notifications_list,
+                                key=lambda x: datetime.datetime.strptime(x[0], "%H:%M:%S %d.%m.%Y"),
+                                reverse=True)
+    return notifications_list
 
 
 def get_problem_statuses():
@@ -227,5 +227,5 @@ if __name__ == '__main__':
     # )
     # db_sess.add(new_problem)
     # db_sess.commit()
-    notification_in_thread()
+    notification_in_thread(db_sess)
     app.run(port=8080, host='127.0.0.1')
