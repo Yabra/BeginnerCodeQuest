@@ -12,10 +12,10 @@ from data.db_session import global_init, create_session
 from data.user import User
 
 
-def send_email(reciever, days, name):
+def send_email(receiver, days, name):
     me = "beginnercodequest@rambler.ru"
     password = "Qwerty16012006"
-    you = reciever
+    you = receiver
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = "Давно не виделись"

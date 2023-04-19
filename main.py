@@ -130,7 +130,7 @@ def problem_page(problem_id):
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def reqister():
+def register():
     if current_user.is_authenticated:
         return redirect("/")
     form = RegisterForm()
