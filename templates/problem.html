@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="" method="post">
     {{ form.hidden_tag() }}
 
     <h2>{{ current_problem.name|safe }}</h2>
@@ -22,6 +21,13 @@
     {% endif %}
 
     <br>{{ form.solution.label }}
+
+    <form action = "/problem/{{ current_problem.id }}" method = "POST" enctype = "multipart/form-data">
+        <input type = "file" name = "file" />
+        <input type = "submit"/>
+    </form>
+
+<form action="" method="post">
     <br>{{ form.solution(rows='20',cols='100') }}
     {% for error in form.solution.errors %}
     <p class="alert alert-danger" role="alert">

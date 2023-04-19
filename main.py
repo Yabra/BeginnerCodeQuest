@@ -1,7 +1,7 @@
 import datetime
 import random
 import json
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, request, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 
@@ -17,9 +17,10 @@ from mail_notification import notification_in_thread
 
 app = Flask(__name__)
 api = Api(app)
-api.add_resource(SolutionResource, '/api/solution_testing')
+api.add_resource(SolutionResource, "/api/solution_testing")
 
-app.config['SECRET_KEY'] = 'yabrortus'
+app.config['SECRET_KEY'] = "yabrortus"
+app.config['UPLOAD_FOLDER'] = "upload"
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -115,16 +116,27 @@ def problem_page(problem_id):
 
     form = ProblemForm()
     current_problem = get_problem(problem_id)
-    if form.validate_on_submit():
+
+    if request.method == "POST" and "file" in request.files:
+        file = request.files["file"]
+        form.solution.data = file.stream.read().decode()
         if not form.solution.data:
             return render_template('problem.html', title=f"Задача №{None}",
                                    form=form,
                                    current_problem=current_problem,
                                    message="Вы не можете отослать пустое решение!")
         new_request(current_user, current_problem, form.solution.data)
-    else:
-        if current_user.is_authenticated and current_user.get_problem_status(problem_id)[0]:
-            form.solution.data = current_user.get_problem_status(problem_id)[2]
+
+    elif form.validate_on_submit():
+        if not form.solution.data:
+            return render_template('problem.html', title=f"Задача №{None}",
+                                   form=form,
+                                   current_problem=current_problem,
+                                   message="Вы не можете отослать пустое решение!")
+        new_request(current_user, current_problem, form.solution.data)
+    elif current_user.is_authenticated and current_user.get_problem_status(problem_id)[0]:
+        form.solution.data = current_user.get_problem_status(problem_id)[2]
+
     return render_template('problem.html', title=f"Задача \"{current_problem.name}\"", form=form,
                            current_problem=current_problem)
 
