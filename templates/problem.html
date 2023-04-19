@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {{ form.hidden_tag() }}
-
     <h2>{{ current_problem.name|safe }}</h2>
     <h4>Описание:</h4>
     {{ current_problem.description|safe }}
@@ -12,7 +10,7 @@
     "SYNTAX_ERROR")%}
     <div class="bg-danger p-2 bg-gradient bg-opacity-75">
         <p>Задача не решена:</p>
-        <p>{{ current_user.get_problem_status(current_problem.id)[1] }}</p>
+        <p>{{ current_user.get_problem_status(current_problem.id)[1]|safe }}</p>
     </div>
     {% elif current_user.get_problem_status(current_problem.id)[0] == "SUCCESS"%}
     <div class="bg-success p-2 bg-gradient bg-opacity-75">
@@ -27,7 +25,8 @@
         <input type = "submit"/>
     </form>
 
-<form action="" method="post">
+<form action="/problem/{{ current_problem.id }}" method="post">
+    {{ form.hidden_tag() }}
     <br>{{ form.solution(rows='20',cols='100') }}
     {% for error in form.solution.errors %}
     <p class="alert alert-danger" role="alert">

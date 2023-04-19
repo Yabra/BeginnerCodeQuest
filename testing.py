@@ -9,22 +9,6 @@ import ProblemStatusTypes
 
 def run_code(uuid: str, code: str, tests_json: str, app) -> None:
     try:
-        code = "import traceback\n" \
-               "import argparse\n" \
-               "parser = argparse.ArgumentParser()\n" \
-               "parser.add_argument('input_file_path', type=str)\n" \
-               "args = parser.parse_args()\n" \
-               "__input_file = open(args.input_file_path)\n" \
-               "def input(s=\"\"):\n" \
-               "    print(s, end=\"\")\n" \
-               "    return __input_file.readline().rstrip(\"\\n\")\n" \
-               "try:\n" + \
-               "\n".join(["    " + s for s in code.split("\n")]) + "\n" + \
-               "    __input_file.close()\n" \
-               "except Exception as e:\n" \
-               "    print(\"Exception: \" + e.__class__.__name__ + \"\\n\" +" \
-               " ''.join(traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)))\n"
-
         os.mkdir(f"./testing/{uuid}")
         file = open(f"./testing/{uuid}/solution.py", "w")
         file.write(code)
@@ -32,13 +16,11 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
 
         tests = json.loads(tests_json)
         for test in tests:
-            input_file = open(f"./testing/{uuid}/input.txt", "w")
-            input_file.write(test[0])
-            input_file.close()
             result = subprocess.check_output(
-                ["python3", f"./testing/{uuid}/solution.py", f"./testing/{uuid}/input.txt"],
+                ["python3", f"./testing/{uuid}/solution.py"],
                 timeout=1.0,
-                stderr=subprocess.STDOUT
+                stderr=subprocess.STDOUT,
+                input=bytes(test[0], "utf-8")
             )
             result = result.decode("utf-8")
 
@@ -46,15 +28,8 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
                 continue
 
             elif result.startswith("Exception:"):
-                requests.post(
-                    f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
-                    json=json.dumps(
-                        {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": result}
-                    )
-                )
 
                 os.remove(f"./testing/{uuid}/solution.py")
-                os.remove(f"./testing/{uuid}/input.txt")
                 os.rmdir(f"./testing/{uuid}")
                 return
 
@@ -67,7 +42,6 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
                 )
 
                 os.remove(f"./testing/{uuid}/solution.py")
-                os.remove(f"./testing/{uuid}/input.txt")
                 os.rmdir(f"./testing/{uuid}")
                 return
 
@@ -87,13 +61,21 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
         )
 
     except subprocess.CalledProcessError as e:
-        requests.post(
-            f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
-            json=json.dumps(
-                {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:\n" + e.output.decode()}
+        output = "<p>" + e.output.decode().replace("\n", "<p>")
+        if "SyntaxError" in output:
+            requests.post(
+                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+                json=json.dumps(
+                    {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:\n" + output}
+                )
             )
-        )
+        else:
+            requests.post(
+                f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/solution_testing",
+                json=json.dumps(
+                    {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": "Runtime error:\n" + output}
+                )
+            )
 
     os.remove(f"./testing/{uuid}/solution.py")
-    os.remove(f"./testing/{uuid}/input.txt")
     os.rmdir(f"./testing/{uuid}")
