@@ -11,7 +11,7 @@
     <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet" type="text/css"/>
     <title>{{title}}</title>
 </head>
-<body>
+<div id="container">
 <header>
     <nav class="navbar navbar-light bg-light">
         <p>
@@ -41,14 +41,16 @@
         {% endif %}
     </nav>
 </header>
-<!-- Begin page content -->
-<main class="container" role="main">
-    <link href="style.css" rel="stylesheet">
-    {% block content %}{% endblock %}
-</main>
+
+<div id="body">
+    <main class="container" role="main">
+        <link href="style.css" rel="stylesheet">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</div>
 <footer>
     <p>Beginner Code Quest</p>
     <p>All rights reserved 2023</p>
 </footer>
-</body>
 </html>
