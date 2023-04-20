@@ -224,21 +224,5 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    # new_problem = Problem(
-    #     name="Скажи привет!",
-    #     description="<p>Создайте программу, принимающую строку и здоровающуся с пользователем.</p>"
-    #                 "<h4>Пример:<h4>"
-    #                 "<p><t>Ввод:</p>"
-    #                 "<p><i>Vlad</i></p>"
-    #                 "<p>    Вывод:</p>"
-    #                 "<p><i>Hello, Vlad!</i></p>",
-    #     tests=json.dumps(
-    #         [("Ярослав", "Hello, Ярослав!\n"), ("Влад", "Hello, Влад!\n"), ("Pavel", "Hello, Pavel!\n")]
-    #     ),
-    #     difficulty=0,
-    #     points=5
-    # )
-    # db_sess.add(new_problem)
-    # db_sess.commit()
     notification_in_thread(db_sess)
     app.run(port=app.config["PORT"], host=app.config["HOST"])

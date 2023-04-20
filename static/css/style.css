@@ -2,11 +2,6 @@ html, body{
     height: 100%;
 }
 
-#container {
-   min-height:100%;
-   position:relative;
-}
-
 footer{
     padding: 10px 20px;
     background: #006fff;
@@ -22,6 +17,11 @@ h2{
     text-align: center;
 }
 
+#container {
+   min-height:85%;
+   position:relative;
+}
+
 #table_form {
     width: 100%;
     margin-bottom: 20px;
@@ -32,11 +32,11 @@ table td, table td * {
 }
 
 #description{
-    font-size: 25pt;
+    font-size: 20pt;
 }
 
 #motivation{
-    font-size: 25pt;
+    font-size: 20pt;
 }
 
 #center{
@@ -67,4 +67,22 @@ table td, table td * {
 
 #solution_td{
     width: 60%;
+}
+
+#reg_log_field{
+    margin-top: 10px;
+    width: 50%;
+}
+
+#example_table{
+  text-align: left;
+  border: 1px solid black;
+  border-collapse: collapse;
+  width: 400px;
+  margin-bottom: 10px;
+}
+
+#example_table td{
+  border: 1px solid black;
+  border-collapse: collapse;
 }

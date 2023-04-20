@@ -61,7 +61,7 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
         )
 
     except subprocess.CalledProcessError as e:
-        output = "<p>" + e.output.decode().replace("\n", "<p>")
+        output = e.output.decode().replace("\n", "<br>")
         if "SyntaxError" in output:
             requests.post(
                 f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
