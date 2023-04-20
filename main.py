@@ -44,6 +44,9 @@ app.config['MAIL_USE_SSL'] = False
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+if not os.path.exists("./db"):
+    os.mkdir("./db")
+
 db_session.global_init("db/db.db")
 db_sess = db_session.create_session()
 
@@ -239,9 +242,6 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    if not os.path.exists("./db"):
-        os.mkdir("./db")
-
     init_mail(app)
     notification_in_thread(db_sess, app.config["HOST"] + ":" + str(app.config["PORT"]) + "/next_problem")
     app.run(port=app.config["PORT"], host=app.config["HOST"])
