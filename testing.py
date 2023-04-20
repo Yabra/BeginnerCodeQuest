@@ -13,7 +13,6 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
         file = open(f"./testing/{uuid}/solution.py", "w")
         file.write(code)
         file.close()
-
         tests = json.loads(tests_json)
         for test in tests:
             result = subprocess.check_output(
@@ -66,14 +65,14 @@ def run_code(uuid: str, code: str, tests_json: str, app) -> None:
             requests.post(
                 f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
                 json=json.dumps(
-                    {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:\n" + output}
+                    {"uuid": uuid, "status": ProblemStatusTypes.SYNTAX_ERROR, "msg": "Syntax error:" + output}
                 )
             )
         else:
             requests.post(
                 f"http://{app.config['MAIN_SERVER_ADDRESS']}/api/results",
                 json=json.dumps(
-                    {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": "Runtime error:\n" + output}
+                    {"uuid": uuid, "status": ProblemStatusTypes.EXCEPTION, "msg": "Runtime error:" + output}
                 )
             )
 

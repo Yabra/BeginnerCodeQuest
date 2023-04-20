@@ -127,7 +127,7 @@ def problem_page(problem_id):
     current_problem = get_problem(problem_id)
 
     if form.validate_on_submit():
-        if "solution_file" in request.files:
+        if request.files["solution_file"].filename:
             file = request.files["solution_file"]
             form.solution.data = file.stream.read().decode()
             new_request(current_user, current_problem, form.solution.data)
