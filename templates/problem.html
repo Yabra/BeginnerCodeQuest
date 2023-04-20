@@ -18,7 +18,7 @@
     </div>
     {% endif %}
 
-    <b>Решение:</b>
+    <br><b>Решение:</b>
     <form action="/problem/{{ current_problem.id }}" method="post" enctype = "multipart/form-data">
         {{ form.hidden_tag() }}
         {{ form.csrf_token }}

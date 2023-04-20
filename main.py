@@ -7,18 +7,21 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_restful import Api
 
 import ProblemStatusTypes
+import testing_connect
 from data import db_session
 from data.user import User
 from data.problem import Problem
 from LoginForm import LoginForm
 from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
-from testing_connect import ResultResource, new_request, init
+from testing_connect import ResultResource, new_request
+import ProblemResource
 from mail_notification import notification_in_thread
 
 app = Flask(__name__)
 api = Api(app)
 api.add_resource(ResultResource, "/api/results")
+api.add_resource(ProblemResource.ProblemResource, "/api/problems")
 
 app.config['SECRET_KEY'] = "yabrortus"
 
@@ -35,7 +38,9 @@ login_manager.init_app(app)
 
 db_session.global_init("db/db.db")
 db_sess = db_session.create_session()
-init(db_sess, app)
+
+testing_connect.init(db_sess, app)
+ProblemResource.init(db_sess, cnf_data["developer_password"])
 
 
 def get_rating_table():
@@ -71,12 +76,12 @@ def check_user_activity():
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = db_sess.query(User).get(user_id)
+    user = db_sess.query(User).filter(User.id == user_id).first()
     return user
 
 
 def get_problem(problem_id):
-    problem = db_sess.query(Problem).get(problem_id)
+    problem = db_sess.query(Problem).filter(Problem.id == problem_id).first()
     return problem
 
 
