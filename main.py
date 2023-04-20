@@ -16,9 +16,10 @@ from RegisterForm import RegisterForm
 from ProblemForm import ProblemForm
 from testing_connect import ResultResource, new_request
 import ProblemResource
-from mail_notification import notification_in_thread
+from mail_notification import notification_in_thread, init_mail
 
 app = Flask(__name__)
+app.app_context().push()
 api = Api(app)
 api.add_resource(ResultResource, "/api/results")
 api.add_resource(ProblemResource.ProblemResource, "/api/problems")
@@ -32,6 +33,13 @@ cnf_file.close()
 app.config['HOST'] = cnf_data["host"]
 app.config['PORT'] = cnf_data["port"]
 app.config['TESTING_SERVER_ADDRESS'] = cnf_data["testing_server_address"]
+app.config['MAIL_SERVER'] = 'smtp.rambler.ru'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = "beginnercodequest@rambler.ru"
+app.config['MAIL_PASSWORD'] = 'Qwerty16012006'
+app.config['MAIL_DEFAULT_SENDER'] = 'beginnercodequest@rambler.ru'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -211,8 +219,9 @@ def clear_notifications():
 
 
 @app.route('/next_problem')
-@login_required
 def next_problem():
+    if not current_user.is_authenticated:
+        return redirect("/")
     problems = [str(i) for i in range(1, db_sess.query(Problem).count() + 1)]
     for problem_id, status in get_problem_statuses().items():
         if status[0] == ProblemStatusTypes.SUCCESS:
@@ -233,5 +242,6 @@ if __name__ == '__main__':
     if not os.path.exists("./db"):
         os.mkdir("./db")
 
-    notification_in_thread(db_sess)
+    init_mail(app)
+    notification_in_thread(db_sess, app.config["HOST"] + ":" + str(app.config["PORT"]) + "/next_problem")
     app.run(port=app.config["PORT"], host=app.config["HOST"])
