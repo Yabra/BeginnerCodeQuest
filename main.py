@@ -1,6 +1,7 @@
 import datetime
 import random
 import json
+import os
 from flask import Flask, render_template, redirect, request, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
@@ -224,5 +225,8 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
+    if not os.path.exists("./db"):
+        os.mkdir("./db")
+
     notification_in_thread(db_sess)
     app.run(port=app.config["PORT"], host=app.config["HOST"])
