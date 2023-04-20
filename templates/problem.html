@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>{{ current_problem.name|safe }}</h2>
-    <h4>Описание:</h4>
+    <h5>Описание:</h5>
     {{ current_problem.description|safe }}
 
     {% if current_user.is_authenticated %}
@@ -18,28 +18,35 @@
     </div>
     {% endif %}
 
-    <br>{{ form.solution.label }}
+    <b>Решение:</b>
+    <form action="/problem/{{ current_problem.id }}" method="post" enctype = "multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
 
-    <form action = "/problem/{{ current_problem.id }}" method = "POST" enctype = "multipart/form-data">
-        <input type = "file" name = "file" />
-        <input type = "submit"/>
+        <table id="table_form">
+            <tbody>
+                <tr>
+                    <td style="width: 70%;">
+                        {{ form.solution(id="solution") }}
+                        {% for error in form.solution.errors %}
+                        <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </td>
+
+                    <td>
+                        {% if current_user.get_problem_status(current_problem.id)[0] != "SUCCESS"%}
+                        {{ form.solution_file(class="btn btn-primary", id="file_upload") }}
+                        {{ form.submit(type="submit", class="btn btn-primary", id="submit") }}
+                        {% endif %}
+
+                        {% else %}
+                        <h2>Для решения задачи, зайдите в аккаунт!</h2>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </form>
-
-<form action="/problem/{{ current_problem.id }}" method="post">
-    {{ form.hidden_tag() }}
-    <br>{{ form.solution(rows='20',cols='100') }}
-    {% for error in form.solution.errors %}
-    <p class="alert alert-danger" role="alert">
-        {{ error }}
-    </p>
-    {% endfor %}
-
-    {% if current_user.get_problem_status(current_problem.id)[0] != "SUCCESS"%}
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {% endif %}
-
-    {% else %}
-    <h2>Для решения задачи, зайдите в аккаунт!</h2>
-    {% endif %}
-</form>
 {% endblock %}

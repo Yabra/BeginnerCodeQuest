@@ -125,22 +125,14 @@ def problem_page(problem_id):
     form = ProblemForm()
     current_problem = get_problem(problem_id)
 
-    if request.method == "POST" and "file" in request.files and request.files["file"].filename:
-        file = request.files["file"]
-        form.solution.data = file.stream.read().decode()
-        if not form.solution.data:
-            return render_template('problem.html', title=f"Задача №{None}",
-                                   form=form,
-                                   current_problem=current_problem,
-                                   message="Вы не можете отослать пустое решение!")
-        new_request(current_user, current_problem, form.solution.data)
+    if form.validate_on_submit():
+        if "solution_file" in request.files:
+            file = request.files["solution_file"]
+            form.solution.data = file.stream.read().decode()
+            new_request(current_user, current_problem, form.solution.data)
 
-    elif form.validate_on_submit():
-        if not form.solution.data:
-            return render_template('problem.html', title=f"Задача \"{current_problem.name}\"",
-                                   form=form,
-                                   current_problem=current_problem)
-        new_request(current_user, current_problem, form.solution.data)
+        elif form.solution.data:
+            new_request(current_user, current_problem, form.solution.data)
 
     elif current_user.is_authenticated and current_user.get_problem_status(problem_id)[0]:
         form.solution.data = current_user.get_problem_status(problem_id)[2]

@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import TextAreaField, SubmitField, FileField
 
 
 class ProblemForm(FlaskForm):
-    solution = TextAreaField('Решение', validators=[DataRequired()])
+    solution = TextAreaField('Решение')
+    solution_file = FileField("solution_file")
     submit = SubmitField('Отправить на проверку')
